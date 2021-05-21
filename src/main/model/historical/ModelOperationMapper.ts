@@ -12,29 +12,29 @@
  * and LGPLv3 licenses, if they were not provided.
  */
 
-import {ModelOperation} from "../ot/applied/ModelOperation";
-import {AppliedCompoundOperation} from "../ot/applied/AppliedCompoundOperation";
-import {AppliedOperation} from "../ot/applied/AppliedOperation";
-import {AppliedDiscreteOperation} from "../ot/applied/AppliedDiscreteOperation";
-import {AppliedArrayInsertOperation} from "../ot/applied/AppliedArrayInsertOperation";
-import {toDataValue} from "../ModelMessageConverter";
-import {AppliedArrayRemoveOperation} from "../ot/applied/AppliedArrayRemoveOperation";
-import {AppliedArrayMoveOperation} from "../ot/applied/AppliedArrayMoveOperation";
-import {AppliedArrayReplaceOperation} from "../ot/applied/AppliedArrayReplaceOperation";
-import {AppliedArraySetOperation} from "../ot/applied/AppliedArraySetOperation";
-import {AppliedObjectAddPropertyOperation} from "../ot/applied/AppliedObjectAddPropertyOperation";
-import {AppliedObjectSetPropertyOperation} from "../ot/applied/AppliedObjectSetPropertyOperation";
-import {AppliedObjectRemovePropertyOperation} from "../ot/applied/AppliedObjectRemovePropertyOperation";
-import {AppliedObjectSetOperation} from "../ot/applied/AppliedObjectSetOperation";
-import {mapObjectValues} from "../../util/ObjectUtils";
-import {AppliedStringInsertOperation} from "../ot/applied/AppliedStringInsertOperation";
-import {AppliedStringRemoveOperation} from "../ot/applied/AppliedStringRemoveOperation";
-import {AppliedStringSetOperation} from "../ot/applied/AppliedStringSetOperation";
-import {AppliedNumberDeltaOperation} from "../ot/applied/AppliedNumberDeltaOperation";
-import {AppliedNumberSetOperation} from "../ot/applied/AppliedNumberSetOperation";
-import {AppliedBooleanSetOperation} from "../ot/applied/AppliedBooleanSetOperation";
-import {AppliedDateSetOperation} from "../ot/applied/AppliedDateSetOperation";
-import {ConvergenceError} from "../../util";
+import { ModelOperation } from "../ot/applied/ModelOperation";
+import { AppliedCompoundOperation } from "../ot/applied/AppliedCompoundOperation";
+import { AppliedOperation } from "../ot/applied/AppliedOperation";
+import { AppliedDiscreteOperation } from "../ot/applied/AppliedDiscreteOperation";
+import { AppliedArrayInsertOperation } from "../ot/applied/AppliedArrayInsertOperation";
+import { toDataValue } from "../ModelMessageConverter";
+import { AppliedArrayRemoveOperation } from "../ot/applied/AppliedArrayRemoveOperation";
+import { AppliedArrayMoveOperation } from "../ot/applied/AppliedArrayMoveOperation";
+import { AppliedArrayReplaceOperation } from "../ot/applied/AppliedArrayReplaceOperation";
+import { AppliedArraySetOperation } from "../ot/applied/AppliedArraySetOperation";
+import { AppliedObjectAddPropertyOperation } from "../ot/applied/AppliedObjectAddPropertyOperation";
+import { AppliedObjectSetPropertyOperation } from "../ot/applied/AppliedObjectSetPropertyOperation";
+import { AppliedObjectRemovePropertyOperation } from "../ot/applied/AppliedObjectRemovePropertyOperation";
+import { AppliedObjectSetOperation } from "../ot/applied/AppliedObjectSetOperation";
+import { mapObjectValues } from "../../util/ObjectUtils";
+import { AppliedStringInsertOperation } from "../ot/applied/AppliedStringInsertOperation";
+import { AppliedStringRemoveOperation } from "../ot/applied/AppliedStringRemoveOperation";
+import { AppliedStringSetOperation } from "../ot/applied/AppliedStringSetOperation";
+import { AppliedNumberDeltaOperation } from "../ot/applied/AppliedNumberDeltaOperation";
+import { AppliedNumberSetOperation } from "../ot/applied/AppliedNumberSetOperation";
+import { AppliedBooleanSetOperation } from "../ot/applied/AppliedBooleanSetOperation";
+import { AppliedDateSetOperation } from "../ot/applied/AppliedDateSetOperation";
+import { ConvergenceError } from "../../util";
 import {
   getOrDefaultArray,
   getOrDefaultBoolean,
@@ -43,13 +43,13 @@ import {
   getOrDefaultString,
   timestampToDate
 } from "../../connection/ProtocolUtil";
-import {IdentityCache} from "../../identity/IdentityCache";
+import { IdentityCache } from "../../identity/IdentityCache";
 
-import {com} from "@convergence/convergence-proto";
+import { com } from "@convergence/convergence-proto";
 import IAppliedDiscreteOperationData = com.convergencelabs.convergence.proto.model.IAppliedDiscreteOperationData;
 import IAppliedCompoundOperationData = com.convergencelabs.convergence.proto.model.IAppliedCompoundOperationData;
 import IModelOperationData = com.convergencelabs.convergence.proto.model.
-  HistoricalOperationsResponseMessage.IModelOperationData;
+HistoricalOperationsResponseMessage.IModelOperationData;
 
 /**
  * @hidden
@@ -82,116 +82,125 @@ function toCompoundOperation(compoundOperationData: IAppliedCompoundOperationDat
 
 function toDiscreteOperation(discreteOperationData: IAppliedDiscreteOperationData): AppliedDiscreteOperation {
   if (discreteOperationData.arrayInsertOperation) {
-    const {id, noOp, index, value} = discreteOperationData.arrayInsertOperation;
+    const { id, noOp, index, value } = discreteOperationData.arrayInsertOperation;
     return new AppliedArrayInsertOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultNumber(index),
       toDataValue(value));
   } else if (discreteOperationData.arrayRemoveOperation) {
-    const {id, noOp, index, oldValue} = discreteOperationData.arrayRemoveOperation;
+    const { id, noOp, index, oldValue } = discreteOperationData.arrayRemoveOperation;
+    const oldVal = noOp ? undefined : toDataValue(oldValue);
     return new AppliedArrayRemoveOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultNumber(index),
-      toDataValue(oldValue));
+      oldVal);
   } else if (discreteOperationData.arrayMoveOperation) {
-    const {id, noOp, fromIndex, toIndex} = discreteOperationData.arrayMoveOperation;
+    const { id, noOp, fromIndex, toIndex } = discreteOperationData.arrayMoveOperation;
     return new AppliedArrayMoveOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultNumber(fromIndex),
       getOrDefaultNumber(toIndex));
   } else if (discreteOperationData.arrayReplaceOperation) {
-    const {id, noOp, index, value, oldValue} = discreteOperationData.arrayReplaceOperation;
+    const { id, noOp, index, value, oldValue } = discreteOperationData.arrayReplaceOperation;
+    const oldVal = noOp ? undefined : toDataValue(oldValue);
     return new AppliedArrayReplaceOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultNumber(index),
       toDataValue(value),
-      toDataValue(oldValue));
+      oldVal);
   } else if (discreteOperationData.arraySetOperation) {
-    const {id, noOp, values, oldValues} = discreteOperationData.arraySetOperation;
+    const { id, noOp, values, oldValues } = discreteOperationData.arraySetOperation;
+    const oldVal = noOp ? undefined : getOrDefaultArray(oldValues).map(toDataValue);
     return new AppliedArraySetOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultArray(values).map(toDataValue),
-      getOrDefaultArray(oldValues).map(toDataValue));
+      oldVal);
   } else if (discreteOperationData.objectAddPropertyOperation) {
-    const {id, noOp, key, value} = discreteOperationData.objectAddPropertyOperation;
+    const { id, noOp, key, value } = discreteOperationData.objectAddPropertyOperation;
     return new AppliedObjectAddPropertyOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultString(key),
       toDataValue(value));
   } else if (discreteOperationData.objectSetPropertyOperation) {
-    const {id, noOp, key, value, oldValue} = discreteOperationData.objectSetPropertyOperation;
+    const { id, noOp, key, value, oldValue } = discreteOperationData.objectSetPropertyOperation;
+    const oldVal = noOp ? undefined : toDataValue(oldValue);
     return new AppliedObjectSetPropertyOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultString(key),
       toDataValue(value),
-      toDataValue(oldValue));
+      oldVal);
   } else if (discreteOperationData.objectRemovePropertyOperation) {
-    const {id, noOp, key, oldValue} = discreteOperationData.objectSetPropertyOperation;
+    const { id, noOp, key, oldValue } = discreteOperationData.objectSetPropertyOperation;
     return new AppliedObjectRemovePropertyOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultString(key),
       toDataValue(oldValue));
   } else if (discreteOperationData.objectSetOperation) {
-    const {id, noOp, values, oldValues} = discreteOperationData.objectSetOperation;
+    const { id, noOp, values, oldValues } = discreteOperationData.objectSetOperation;
+    const oldVal = noOp ? undefined : mapObjectValues(getOrDefaultObject(oldValues), toDataValue);
     return new AppliedObjectSetOperation(
       id,
       getOrDefaultBoolean(noOp),
       mapObjectValues(getOrDefaultObject(values), toDataValue),
-      mapObjectValues(getOrDefaultObject(oldValues), toDataValue));
+      oldVal);
   } else if (discreteOperationData.stringInsertOperation) {
-    const {id, noOp, index, value} = discreteOperationData.stringInsertOperation;
+    const { id, noOp, index, value } = discreteOperationData.stringInsertOperation;
     return new AppliedStringInsertOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultNumber(index),
       getOrDefaultString(value));
   } else if (discreteOperationData.stringRemoveOperation) {
-    const {id, noOp, index, oldValue} = discreteOperationData.stringRemoveOperation;
+    const { id, noOp, index, oldValue } = discreteOperationData.stringRemoveOperation;
+    const oldVal = noOp ? undefined : getOrDefaultString(oldValue);
     return new AppliedStringRemoveOperation(id,
       getOrDefaultBoolean(noOp),
       getOrDefaultNumber(index),
-      getOrDefaultString(oldValue));
+      oldVal);
   } else if (discreteOperationData.stringSetOperation) {
-    const {id, noOp, value, oldValue} = discreteOperationData.stringSetOperation;
+    const { id, noOp, value, oldValue } = discreteOperationData.stringSetOperation;
+    const oldVal = noOp ? undefined : getOrDefaultString(oldValue);
     return new AppliedStringSetOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultString(value),
-      getOrDefaultString(oldValue));
+      oldVal);
   } else if (discreteOperationData.numberDeltaOperation) {
-    const {id, noOp, delta} = discreteOperationData.numberDeltaOperation;
+    const { id, noOp, delta } = discreteOperationData.numberDeltaOperation;
     return new AppliedNumberDeltaOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultNumber(delta));
   } else if (discreteOperationData.numberSetOperation) {
-    const {id, noOp, value, oldValue} = discreteOperationData.numberSetOperation;
+    const { id, noOp, value, oldValue } = discreteOperationData.numberSetOperation;
+    const oldVal = noOp ? undefined : getOrDefaultNumber(oldValue);
     return new AppliedNumberSetOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultNumber(value),
-      getOrDefaultNumber(oldValue));
+      oldVal);
   } else if (discreteOperationData.booleanSetOperation) {
-    const {id, noOp, value, oldValue} = discreteOperationData.booleanSetOperation;
+    const { id, noOp, value, oldValue } = discreteOperationData.booleanSetOperation;
     return new AppliedBooleanSetOperation(
       id,
       getOrDefaultBoolean(noOp),
       getOrDefaultBoolean(value),
       getOrDefaultBoolean(oldValue));
   } else if (discreteOperationData.dateSetOperation) {
-    const {id, noOp, value, oldValue} = discreteOperationData.dateSetOperation;
+    const { id, noOp, value, oldValue } = discreteOperationData.dateSetOperation;
+    const oldVal = noOp ? undefined : timestampToDate(oldValue);
     return new AppliedDateSetOperation(
       id,
       getOrDefaultBoolean(noOp),
       timestampToDate(value),
-      timestampToDate(oldValue));
+      oldVal);
   }
 }

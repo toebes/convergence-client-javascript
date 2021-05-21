@@ -12,25 +12,25 @@
  * and LGPLv3 licenses, if they were not provided.
  */
 
-import {ConvergenceSession} from "../../ConvergenceSession";
-import {HistoricalObject} from "./HistoricalObject";
-import {HistoricalElement} from "./HistoricalElement";
-import {Model} from "../internal/Model";
-import {IObjectValue} from "../dataValue";
-import {HistoricalWrapperFactory} from "./HistoricalWrapperFactory";
-import {ConvergenceConnection} from "../../connection/ConvergenceConnection";
-import {ModelOperation} from "../ot/applied/ModelOperation";
-import {ModelOperationEvent} from "../ModelOperationEvent";
-import {OperationType} from "../ot/ops/OperationType";
-import {AppliedCompoundOperation} from "../ot/applied/AppliedCompoundOperation";
-import {AppliedDiscreteOperation} from "../ot/applied/AppliedDiscreteOperation";
-import {ObservableModel, ObservableModelEventConstants, ObservableModelEvents} from "../observable/ObservableModel";
-import {Path, PathElement} from "../Path";
-import {toModelOperation} from "./ModelOperationMapper";
-import {IdentityCache} from "../../identity/IdentityCache";
-import {getOrDefaultArray} from "../../connection/ProtocolUtil";
+import { ConvergenceSession } from "../../ConvergenceSession";
+import { HistoricalObject } from "./HistoricalObject";
+import { HistoricalElement } from "./HistoricalElement";
+import { Model } from "../internal/Model";
+import { IObjectValue } from "../dataValue";
+import { HistoricalWrapperFactory } from "./HistoricalWrapperFactory";
+import { ConvergenceConnection } from "../../connection/ConvergenceConnection";
+import { ModelOperation } from "../ot/applied/ModelOperation";
+import { ModelOperationEvent } from "../ModelOperationEvent";
+import { OperationType } from "../ot/ops/OperationType";
+import { AppliedCompoundOperation } from "../ot/applied/AppliedCompoundOperation";
+import { AppliedDiscreteOperation } from "../ot/applied/AppliedDiscreteOperation";
+import { ObservableModel, ObservableModelEventConstants, ObservableModelEvents } from "../observable/ObservableModel";
+import { Path, PathElement } from "../Path";
+import { toModelOperation } from "./ModelOperationMapper";
+import { IdentityCache } from "../../identity/IdentityCache";
+import { getOrDefaultArray } from "../../connection/ProtocolUtil";
 
-import {com} from "@convergence/convergence-proto";
+import { com } from "@convergence/convergence-proto";
 import IConvergenceMessage = com.convergencelabs.convergence.proto.IConvergenceMessage;
 
 interface OperationRequest {
@@ -154,14 +154,14 @@ export class HistoricalModel implements ObservableModel {
    * @internal
    */
   constructor(data: IObjectValue,
-              version: number,
-              modifiedTime: Date,
-              createdTime: Date,
-              modelId: string,
-              collectionId: string,
-              connection: ConvergenceConnection,
-              session: ConvergenceSession,
-              identityCache: IdentityCache) {
+    version: number,
+    modifiedTime: Date,
+    createdTime: Date,
+    modelId: string,
+    collectionId: string,
+    connection: ConvergenceConnection,
+    session: ConvergenceSession,
+    identityCache: IdentityCache) {
 
     this._session = session;
     this._connection = connection;
@@ -415,7 +415,7 @@ export class HistoricalModel implements ObservableModel {
     this._opRequests.push(opRequest);
 
     return this._connection.request(request).then((response: IConvergenceMessage) => {
-      const {historicalOperationsResponse} = response;
+      const { historicalOperationsResponse } = response;
       opRequest.completed = true;
       opRequest.operations = getOrDefaultArray(historicalOperationsResponse.operations).map(
         op => toModelOperation(op, this._identityCache));

@@ -33,14 +33,14 @@ import {
   protoValueToJson,
   timestampToDate
 } from "../connection/ProtocolUtil";
-import {ConvergenceError} from "../util";
-import {mapObjectValues, objectForEach} from "../util/ObjectUtils";
-import {ModelPermissions} from "./ModelPermissions";
-import {DomainUserId} from "../identity";
-import {ModelResult} from "./query";
-import {TypeChecker} from "../util/TypeChecker";
+import { ConvergenceError } from "../util";
+import { mapObjectValues, objectForEach } from "../util/ObjectUtils";
+import { ModelPermissions } from "./ModelPermissions";
+import { DomainUserId } from "../identity";
+import { ModelResult } from "./query";
+import { TypeChecker } from "../util/TypeChecker";
 
-import {com} from "@convergence/convergence-proto";
+import { com } from "@convergence/convergence-proto";
 import IConvergenceMessage = com.convergencelabs.convergence.proto.IConvergenceMessage;
 import IDataValueData = com.convergencelabs.convergence.proto.model.IDataValue;
 import IObjectValueData = com.convergencelabs.convergence.proto.model.IObjectValue;
@@ -58,11 +58,11 @@ import IRemoteClientOpenedMessage = com.convergencelabs.convergence.proto.model.
 import IRemoteClientClosedMessage = com.convergencelabs.convergence.proto.model.IRemoteClientClosedMessage;
 import IModelPermissionsChangedMessage = com.convergencelabs.convergence.proto.model.IModelPermissionsChangedMessage;
 import IRemoteClientResyncStartedMessage =
-  com.convergencelabs.convergence.proto.model.IRemoteClientResyncStartedMessage;
+com.convergencelabs.convergence.proto.model.IRemoteClientResyncStartedMessage;
 import IRemoteClientResyncCompletedMessage =
-  com.convergencelabs.convergence.proto.model.IRemoteClientResyncCompletedMessage;
+com.convergencelabs.convergence.proto.model.IRemoteClientResyncCompletedMessage;
 import IModelResyncServerCompleteMessage =
-  com.convergencelabs.convergence.proto.model.IModelResyncServerCompleteMessage;
+com.convergencelabs.convergence.proto.model.IModelResyncServerCompleteMessage;
 
 /**
  * @hidden
@@ -70,7 +70,7 @@ import IModelResyncServerCompleteMessage =
  */
 export function toDataValue(val: IDataValueData): IDataValue {
   if (val.arrayValue) {
-    const {id, children} = val.arrayValue;
+    const { id, children } = val.arrayValue;
     return {
       type: "array",
       id,
@@ -79,20 +79,20 @@ export function toDataValue(val: IDataValueData): IDataValue {
   } else if (val.objectValue) {
     return toObjectValue(val.objectValue);
   } else if (val.booleanValue) {
-    const {id, value} = val.booleanValue;
-    return {type: "boolean", id, value: getOrDefaultBoolean(value)} as IBooleanValue;
+    const { id, value } = val.booleanValue;
+    return { type: "boolean", id, value: getOrDefaultBoolean(value) } as IBooleanValue;
   } else if (val.dateValue) {
-    const {id, value} = val.dateValue;
-    return {type: "date", id, value: timestampToDate(value)} as IDateValue;
+    const { id, value } = val.dateValue;
+    return { type: "date", id, value: timestampToDate(value) } as IDateValue;
   } else if (val.doubleValue) {
-    const {id, value} = val.doubleValue;
-    return {type: "number", id, value: getOrDefaultNumber(value)} as INumberValue;
+    const { id, value } = val.doubleValue;
+    return { type: "number", id, value: getOrDefaultNumber(value) } as INumberValue;
   } else if (val.stringValue) {
-    const {id, value} = val.stringValue;
-    return {type: "string", id, value: getOrDefaultString(value)} as IStringValue;
+    const { id, value } = val.stringValue;
+    return { type: "string", id, value: getOrDefaultString(value) } as IStringValue;
   } else if (val.nullValue) {
-    const {id} = val.nullValue;
-    return {type: "null", id, value: null} as INullValue;
+    const { id } = val.nullValue;
+    return { type: "null", id, value: null } as INullValue;
   } else {
     throw new ConvergenceError("Invalid data delta type: " + JSON.stringify(val));
   }
@@ -104,26 +104,26 @@ export function toDataValue(val: IDataValueData): IDataValue {
  */
 export function toIDataValue(val: IDataValue): IDataValueData {
   if (val.type === "array") {
-    const {id, value} = val as IArrayValue;
-    return {arrayValue: {id, children: value.map(toIDataValue)}};
+    const { id, value } = val as IArrayValue;
+    return { arrayValue: { id, children: value.map(toIDataValue) } };
   } else if (val.type === "object") {
-    const {id, value} = val as IObjectValue;
-    return {objectValue: {id, children: mapObjectValues(value, toIDataValue)}};
+    const { id, value } = val as IObjectValue;
+    return { objectValue: { id, children: mapObjectValues(value, toIDataValue) } };
   } else if (val.type === "boolean") {
-    const {id, value} = val as IBooleanValue;
-    return {booleanValue: {id, value}};
+    const { id, value } = val as IBooleanValue;
+    return { booleanValue: { id, value } };
   } else if (val.type === "date") {
-    const {id, value} = val as IDateValue;
-    return {dateValue: {id, value: dateToTimestamp(value)}};
+    const { id, value } = val as IDateValue;
+    return { dateValue: { id, value: dateToTimestamp(value) } };
   } else if (val.type === "number") {
-    const {id, value} = val as INumberValue;
-    return {doubleValue: {id, value}};
+    const { id, value } = val as INumberValue;
+    return { doubleValue: { id, value } };
   } else if (val.type === "null") {
-    const {id} = val as INullValue;
-    return {nullValue: {id}};
+    const { id } = val as INullValue;
+    return { nullValue: { id } };
   } else if (val.type === "string") {
-    const {id, value} = val as IStringValue;
-    return {stringValue: {id, value}};
+    const { id, value } = val as IStringValue;
+    return { stringValue: { id, value } };
   } else {
     throw new ConvergenceError("Invalid data delta type: " + JSON.stringify(val));
   }
